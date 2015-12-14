@@ -19,7 +19,8 @@ defmodule Maperoo.Mixfile do
   def application do
     [mod: {Maperoo, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger,
-                    :phoenix_ecto, :postgrex, :con_cache]]
+                    :phoenix_ecto, :postgrex, :con_cache,
+                    :geohash]]
   end
 
   # Specifies which paths to compile per environment.
@@ -36,7 +37,8 @@ defmodule Maperoo.Mixfile do
      {:phoenix_html, "~> 2.1"},
      {:phoenix_live_reload, "~> 1.0", only: :dev},
      {:cowboy, "~> 1.0"},
-     {:con_cache, "~> 0.9.0"}]
+     {:con_cache, "~> 0.9.0"},
+     {:geohash, "~> 0.1.1"}]
   end
 
   # Aliases are shortcut or tasks specific to the current project.

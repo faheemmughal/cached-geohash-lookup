@@ -12,8 +12,8 @@ config :logger, level: :warn
 # Configure your database
 config :maperoo, Maperoo.Repo,
   adapter: Ecto.Adapters.Postgres,
-  username: "postgres",
-  password: "postgres",
+  # username: "postgres",
+  # password: "postgres",
   database: "maperoo_test",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox

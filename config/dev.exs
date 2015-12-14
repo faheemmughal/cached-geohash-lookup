@@ -37,6 +37,6 @@ config :maperoo, Maperoo.Repo,
   adapter: Ecto.Adapters.Postgres,
   # username: "postgres",
   # password: "postgres",
-  database: "maperoo_dev",
+  database: "shape",
   hostname: "localhost",
   pool_size: 10

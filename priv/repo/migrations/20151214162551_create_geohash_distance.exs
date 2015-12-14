@@ -6,8 +6,6 @@ defmodule Maperoo.Repo.Migrations.CreateGeohashDistance do
       add :start_point, :string
       add :end_point, :string
       add :meters, :integer
-
-      timestamps
     end
 
   end

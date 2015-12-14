@@ -1,12 +1,13 @@
 defmodule Maperoo.GeohashDistance do
   use Maperoo.Web, :model
 
+  @primary_key false
+  # @derive {Phoenix.Param, key: :start_point}
+
   schema "geohash_distances" do
     field :start_point, :string
     field :end_point, :string
     field :meters, :integer
-
-    timestamps
   end
 
   @required_fields ~w(start_point end_point meters)

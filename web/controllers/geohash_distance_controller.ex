@@ -10,48 +10,49 @@ defmodule Maperoo.GeohashDistanceController do
     render(conn, "index.json", geohash_distances: geohash_distances)
   end
 
-  def create(conn, %{"geohash_distance" => geohash_distance_params}) do
-    changeset = GeohashDistance.changeset(%GeohashDistance{}, geohash_distance_params)
+  # def create(conn, %{"geohash_distance" => geohash_distance_params}) do
+  #   changeset = GeohashDistance.changeset(%GeohashDistance{}, geohash_distance_params)
 
-    case Repo.insert(changeset) do
-      {:ok, geohash_distance} ->
-        conn
-        |> put_status(:created)
-        |> put_resp_header("location", geohash_distance_path(conn, :show, geohash_distance))
-        |> render("show.json", geohash_distance: geohash_distance)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Maperoo.ChangesetView, "error.json", changeset: changeset)
-    end
-  end
+  #   case Repo.insert(changeset) do
+  #     {:ok, geohash_distance} ->
+  #       conn
+  #       |> put_status(:created)
+  #       |> put_resp_header("location", geohash_distance_path(conn, :show, geohash_distance))
+  #       |> render("show.json", geohash_distance: geohash_distance)
+  #     {:error, changeset} ->
+  #       conn
+  #       |> put_status(:unprocessable_entity)
+  #       |> render(Maperoo.ChangesetView, "error.json", changeset: changeset)
+  #   end
+  # end
 
-  def show(conn, %{"id" => id}) do
-    geohash_distance = Repo.get!(GeohashDistance, id)
-    render(conn, "show.json", geohash_distance: geohash_distance)
-  end
+  # def show(conn, %{"start_point" => start_point, "end_point" => end_point}) do
 
-  def update(conn, %{"id" => id, "geohash_distance" => geohash_distance_params}) do
-    geohash_distance = Repo.get!(GeohashDistance, id)
-    changeset = GeohashDistance.changeset(geohash_distance, geohash_distance_params)
+  #   geohash_distance = Repo.get_by!(GeohashDistance, start_point: start_point, end_point: end_point)
+  #   render(conn, "show.json", geohash_distance: geohash_distance)
+  # end
 
-    case Repo.update(changeset) do
-      {:ok, geohash_distance} ->
-        render(conn, "show.json", geohash_distance: geohash_distance)
-      {:error, changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render(Maperoo.ChangesetView, "error.json", changeset: changeset)
-    end
-  end
+  # def update(conn, %{"id" => id, "geohash_distance" => geohash_distance_params}) do
+  #   geohash_distance = Repo.get!(GeohashDistance, id)
+  #   changeset = GeohashDistance.changeset(geohash_distance, geohash_distance_params)
 
-  def delete(conn, %{"id" => id}) do
-    geohash_distance = Repo.get!(GeohashDistance, id)
+  #   case Repo.update(changeset) do
+  #     {:ok, geohash_distance} ->
+  #       render(conn, "show.json", geohash_distance: geohash_distance)
+  #     {:error, changeset} ->
+  #       conn
+  #       |> put_status(:unprocessable_entity)
+  #       |> render(Maperoo.ChangesetView, "error.json", changeset: changeset)
+  #   end
+  # end
 
-    # Here we use delete! (with a bang) because we expect
-    # it to always work (and if it does not, it will raise).
-    Repo.delete!(geohash_distance)
+  # def delete(conn, %{"id" => id}) do
+  #   geohash_distance = Repo.get!(GeohashDistance, id)
 
-    send_resp(conn, :no_content, "")
-  end
+  #   # Here we use delete! (with a bang) because we expect
+  #   # it to always work (and if it does not, it will raise).
+  #   Repo.delete!(geohash_distance)
+
+  #   send_resp(conn, :no_content, "")
+  # end
 end
