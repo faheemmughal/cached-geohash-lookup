@@ -10,9 +10,9 @@ defmodule Maperoo.GeohashDistanceView do
   end
 
   def render("geohash_distance.json", %{geohash_distance: geohash_distance}) do
-    %{id: geohash_distance.id,
-      start_point: geohash_distance.start_point,
-      end_point: geohash_distance.end_point,
+    %{
+      #start_point: geohash_distance.start_point,
+      #end_point: geohash_distance.end_point,
       meters: geohash_distance.meters}
   end
 end

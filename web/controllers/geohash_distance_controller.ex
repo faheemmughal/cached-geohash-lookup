@@ -5,9 +5,25 @@ defmodule Maperoo.GeohashDistanceController do
 
   plug :scrub_params, "geohash_distance" when action in [:create, :update]
 
-  def index(conn, _params) do
-    geohash_distances = Repo.all(GeohashDistance)
-    render(conn, "index.json", geohash_distances: geohash_distances)
+  def index(conn, %{"start_point" => start_point, "end_point" => end_point}) do
+    start_hash = start_point |> geohash
+    end_hash = end_point |> geohash
+
+    geohash_distances = ConCache.get_or_store(:my_cache, [start_hash, end_hash], fn ->
+      Repo.all(GeohashDistance, start_point: geohash(start_point), end_point: geohash(end_point))
+    end)
+
+    render(conn, "index.json", geohash_distances: geohash_distances || [])
+  end
+
+  def geohash(point) do
+    # IO.puts "point is #{point}"
+    [lat, long] = String.split(point, ",")
+                |> Enum.map(&String.to_float(&1))
+    # IO.puts "lat is #{lat}, long is #{long}"
+    hash = Geohash.encode(long, lat, 7)
+    # IO.puts "hash is #{hash}"
+    hash
   end
 
   # def create(conn, %{"geohash_distance" => geohash_distance_params}) do
