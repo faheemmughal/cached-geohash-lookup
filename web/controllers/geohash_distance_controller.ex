@@ -1,5 +1,6 @@
 defmodule Maperoo.GeohashDistanceController do
   use Maperoo.Web, :controller
+  require Logger
 
   alias Maperoo.GeohashDistance
 
@@ -16,7 +17,7 @@ defmodule Maperoo.GeohashDistanceController do
   end
 
   defp geohash(point) do
-    [lat, long] =
+    [long, lat] =
       String.split(point, ",")
       |> Enum.map(&String.to_float(&1))
 
@@ -25,6 +26,7 @@ defmodule Maperoo.GeohashDistanceController do
 
   defp distance(start_hash, end_hash) do
     ConCache.get_or_store(:my_cache, [start_hash, end_hash], fn ->
+      Logger.debug "cache miss"
       fetch_or_calculate(start_hash, end_hash)
     end)
   end
@@ -32,6 +34,7 @@ defmodule Maperoo.GeohashDistanceController do
   defp fetch_or_calculate(start_hash, end_hash) do
     case fetch_from_database(start_hash, end_hash) do
       nil ->
+        Logger.debug "does not exist in database"
         distance = calculate_distance(start_hash, end_hash)
         geohash_distance = %GeohashDistance{start_point: start_hash, end_point: end_hash, meters: distance}
         Repo.insert!(geohash_distance)
@@ -46,13 +49,16 @@ defmodule Maperoo.GeohashDistanceController do
   end
 
   defp calculate_distance(start_hash, end_hash) do
+    Logger.debug "calculating straight line distance between #{start_hash} and #{end_hash}"
     straight_line_distance = straight_line_distance(start_hash, end_hash)
 
-    if straight_line_distance > 10_000 do
+    Logger.debug "Straight line distance is #{straight_line_distance}"
+    if(straight_line_distance > 10_000) do
       nil
     else
       by_road_distance = by_road_distance(start_hash, end_hash)
 
+      Logger.debug "Road distance is #{by_road_distance}"
       if by_road_distance > (2 * straight_line_distance) do
         by_road_distance
       else
@@ -62,19 +68,18 @@ defmodule Maperoo.GeohashDistanceController do
   end
 
   defp straight_line_distance(start_hash, end_hash) do
-    query = "SELECT round(
-              cast(
+    query = "SELECT cast(
                 ST_distance_sphere(
-                  ST_PointFromGeoHash('$1'),
-                  ST_PointFromGeoHash('$2')
-                ) as numeric),
-              2) as distance"
+                  ST_PointFromGeoHash($1),
+                  ST_PointFromGeoHash($2)
+                ) as int)
+              as distance"
 
     {:ok, %{rows: [[distance]]}} = Ecto.Adapters.SQL.query(Repo, query, [start_hash, end_hash])
     distance
   end
 
   defp by_road_distance(start_hash, end_hash) do
-    OSRM.execute(start_hash, end_hash) || 0
+    OSRM.execute([start_hash, end_hash]) || 0
   end
 end
