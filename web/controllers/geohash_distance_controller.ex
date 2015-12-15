@@ -35,12 +35,12 @@ defmodule Maperoo.GeohashDistanceController do
     case fetch_from_database(start_hash, end_hash) do
       nil ->
         Logger.debug "does not exist in database"
-        distance = calculate_distance(start_hash, end_hash)
-        geohash_distance = %GeohashDistance{start_point: start_hash, end_point: end_hash, meters: distance}
+        meters = calculate_distance(start_hash, end_hash)
+        geohash_distance = %GeohashDistance{start_point: start_hash, end_point: end_hash, meters: meters}
         Repo.insert!(geohash_distance)
         geohash_distance
-      distance ->
-        distance
+      geohash_distance ->
+        geohash_distance
       end
   end
 
@@ -50,24 +50,24 @@ defmodule Maperoo.GeohashDistanceController do
 
   defp calculate_distance(start_hash, end_hash) do
     Logger.debug "calculating straight line distance between #{start_hash} and #{end_hash}"
-    straight_line_distance = straight_line_distance(start_hash, end_hash)
+    straight_line_distance = calculate_straight_line_distance(start_hash, end_hash)
 
     Logger.debug "Straight line distance is #{straight_line_distance}"
     if(straight_line_distance > 10_000) do
       nil
     else
-      by_road_distance = by_road_distance(start_hash, end_hash)
+      road_distance = calculate_road_distance(start_hash, end_hash)
 
-      Logger.debug "Road distance is #{by_road_distance}"
-      if by_road_distance > (2 * straight_line_distance) do
-        by_road_distance
+      Logger.debug "Road distance is #{road_distance}"
+      if road_distance > (2 * straight_line_distance) do
+        road_distance
       else
         straight_line_distance
       end
     end
   end
 
-  defp straight_line_distance(start_hash, end_hash) do
+  defp calculate_straight_line_distance(start_hash, end_hash) do
     query = "SELECT cast(
                 ST_distance_sphere(
                   ST_PointFromGeoHash($1),
@@ -75,11 +75,11 @@ defmodule Maperoo.GeohashDistanceController do
                 ) as int)
               as distance"
 
-    {:ok, %{rows: [[distance]]}} = Ecto.Adapters.SQL.query(Repo, query, [start_hash, end_hash])
-    distance
+    {:ok, %{rows: [[meters]]}} = Ecto.Adapters.SQL.query(Repo, query, [start_hash, end_hash])
+    meters
   end
 
-  defp by_road_distance(start_hash, end_hash) do
+  defp calculate_road_distance(start_hash, end_hash) do
     OSRM.execute([start_hash, end_hash]) || 0
   end
 end
