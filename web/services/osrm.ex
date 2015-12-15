@@ -3,9 +3,13 @@ defmodule OSRM do
 
   @base_url "http://192.168.99.100:5000/viaroute?"
 
+  def calculate(start_hash, end_hash) do
+    OSRM.execute([start_hash, end_hash]) || 0
+  end
+
   def execute(locations) do
     result = locations
-    |> Enum.map(&hash_to_location_string(&1))
+    |> Enum.map(&GeoConversion.geohash_to_location_string(&1))
     |> query_params
     |> get!
 
@@ -43,10 +47,4 @@ defmodule OSRM do
       "alt" => "false"})
   end
 
-  defp hash_to_location_string(hash) do
-    hash
-    |> Geohash.decode
-    |> Tuple.to_list
-    |> Enum.join(",")
-  end
 end
