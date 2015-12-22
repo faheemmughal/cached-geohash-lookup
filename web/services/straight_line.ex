@@ -1,7 +1,7 @@
 defmodule StraightLine do
   alias Maperoo.Repo
 
-  def calculate(start_hash, end_hash) do
+  def calculate(%{start_hash: start_hash, end_hash: end_hash}) do
     {:ok, %{rows: [[meters]]}} = Ecto.Adapters.SQL.query(Repo, query, [start_hash, end_hash])
     meters
   end

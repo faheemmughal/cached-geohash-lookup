@@ -9,6 +9,10 @@ defmodule Maperoo.GeohashDistanceView do
     %{data: render_one(geohash_distance, Maperoo.GeohashDistanceView, "geohash_distance.json")}
   end
 
+  def render("matrix.json", %{geohash_distance: geohash_distance}) do
+    %{data: render_one(geohash_distance, Maperoo.GeohashDistanceView, "matrix.json")}
+  end
+
   def render("geohash_distance.json", %{geohash_distance: nil}) do
     %{ meters: nil }
   end
@@ -16,5 +20,10 @@ defmodule Maperoo.GeohashDistanceView do
   def render("geohash_distance.json", %{geohash_distance: geohash_distance}) do
     %{
       meters: geohash_distance.meters}
+  end
+
+  def render("matrix.json", %{geohash_distance: geohash_distance}) do
+    %{
+      meters: geohash_distance}
   end
 end

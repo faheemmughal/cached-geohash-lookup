@@ -1,17 +1,25 @@
 defmodule OSRM do
   use HTTPoison.Base
 
-  @base_url "http://192.168.99.100:5000/viaroute?"
+  require Logger
 
-  def calculate(start_hash, end_hash) do
-    OSRM.execute([start_hash, end_hash]) || 0
+  @base_url "http://localhost:5000/"
+  @viaroute "viaroute?"
+  @matrix "table?"
+
+  # def calculate(%{start_hash: start_hash, end_hash: end_hash}) do
+  #   execute([start_hash, end_hash], @viaroute) || 0
+  # end
+
+  def calculate(%{start_hash: start_hash, end_hashes: end_hashes}, :matrix) do
+    execute([start_hash|end_hashes], @matrix)
   end
 
-  def execute(locations) do
+  def execute(locations, service) do
     result = locations
-    |> Enum.map(&GeoConversion.geohash_to_location_string(&1))
-    |> query_params
-    |> get!
+      # |> Enum.map(&GeoConversion.geohash_to_location_string(&1))
+      |> query_params(service)
+      |> get!
 
     result.body
   end
@@ -24,19 +32,23 @@ defmodule OSRM do
     case Poison.decode!(body) do
       %{"status" => 207} ->
         nil
-      %{"route_summary" => %{"total_distance" => distance}} ->
+      %{"route_summary" => %{"total_distance" => distance, "total_time" => time}} ->
+        Logger.error "total_distance: #{distance}, total_time: #{time}"
         distance
+      %{"distance_table" => distance_table} ->
+        # Logger.error "distance table:"
+        distance_table
     end
   end
 
 
-  defp query_params(locations) do
+  defp query_params(locations, service) do
     location_params =
       locations
       |> Enum.map(fn(l) -> "loc=" <> l end)
       |> Enum.join("&")
 
-    (location_params <> "&" <> options_params)
+    (service <> location_params <> "&" <> options_params)
   end
 
   defp options_params do

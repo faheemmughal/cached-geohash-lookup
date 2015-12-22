@@ -19,7 +19,8 @@ defmodule Maperoo.Mixfile do
   def application do
     [mod: {Maperoo, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger,
-                    :phoenix_ecto, :postgrex, :con_cache,
+                    # :phoenix_ecto, :postgrex,
+                    :con_cache,
                     :geohash, :httpoison]]
   end
 

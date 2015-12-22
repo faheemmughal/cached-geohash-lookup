@@ -3,11 +3,11 @@ defmodule GeoConversion do
   @precision 7
 
   def geohash_from_point(point) do
-    [long, lat] =
-      String.split(point, ",")
-      |> Enum.map(&String.to_float(&1))
+    [lat, long] = point
+                  |> String.split(",")
+                  |> Enum.map(&String.to_float(&1))
 
-    Geohash.encode(long, lat, @precision)
+    Geohash.encode(lat, long, @precision)
   end
 
   def geohash_to_location_string(hash) do
