@@ -4,8 +4,14 @@ defmodule Maperoo.GeohashDistanceController do
 
   alias Maperoo.GeohashDistance
 
+  import Maperoo.RateLimit
+  plug :rate_limit, max_requests: 5, interval_seconds: 60
+
   def index(conn, %{"start_point" => start_point, "end_points" => end_points, "matrix" => "true"}) do
-    geohash_distances = calculate_matrix(%{start_hash: start_point, end_hashes: end_points})
+    # start_hash = GeoConversion.geohash_from_point(start_point)
+    # end_hashes = GeoConversion.geohash_from_points(end_points)
+
+    geohash_distances = calculate(%{start_hash: start_point, end_hashes: end_points})
 
     render(conn, "matrix.json", geohash_distance: geohash_distances)
   end
@@ -49,7 +55,7 @@ defmodule Maperoo.GeohashDistanceController do
   #   |> Repo.insert!
   # end
 
-  defp calculate_matrix(hash_pairs) do
+  defp calculate(hash_pairs) do
     matrix = OSRM.calculate(hash_pairs, :matrix)
   end
 

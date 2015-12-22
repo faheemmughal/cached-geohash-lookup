@@ -20,7 +20,7 @@ defmodule Maperoo.Mixfile do
     [mod: {Maperoo, []},
      applications: [:phoenix, :phoenix_html, :cowboy, :logger,
                     # :phoenix_ecto, :postgrex,
-                    :con_cache,
+                    :con_cache, :ex_rated,
                     :geohash, :httpoison]]
   end
 
@@ -40,7 +40,8 @@ defmodule Maperoo.Mixfile do
      {:cowboy, "~> 1.0"},
      {:con_cache, "~> 0.9.0"},
      {:geohash, "~> 0.1.1"},
-     {:httpoison, "~> 0.8.0"}]
+     {:ex_rated, "~> 1.1.0"},
+     {:httpoison, "~> 0.8.0"},]
   end
 
   # Aliases are shortcut or tasks specific to the current project.
